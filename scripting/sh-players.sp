@@ -95,9 +95,14 @@ public void OnClientAuthorized(int client, const char[] auth)
 	if (g_Database == null)
 		return;
 	
+	//Retrieve the steam2 auth id for use.
+	char sSteam2[64];
+	if (!GetClientAuthId(client, AuthId_Steam2, sSteam2, sizeof(sSteam2)))
+		return;
+	
 	//Lets pull necessary player data for use elsewhere.
 	char sQuery[256];
-	g_Database.Format(sQuery, sizeof(sQuery), "SELECT id FROM `sh_players` WHERE steam2 = '%s';", auth);
+	g_Database.Format(sQuery, sizeof(sQuery), "SELECT id FROM `sh_players` WHERE steam2 = '%s';", sSteam2);
 	g_Database.Query(OnParsePlayer, sQuery, GetClientUserId(client), DBPrio_Low);
 }
 
@@ -127,7 +132,7 @@ public void OnParsePlayer(Database db, DBResultSet results, const char[] error, 
 	{
 		//If any of these SteamIDs return false then Steam's down so don't register the player.
 		char sSteam2[64];
-		if (!GetClientAuthId(client, AuthId_Engine, sSteam2, sizeof(sSteam2)))
+		if (!GetClientAuthId(client, AuthId_Steam2, sSteam2, sizeof(sSteam2)))
 			return;
 
 		char sSteam3[64];
